@@ -44,4 +44,4 @@ if [ -f "${PY_REQ}" ]; then
   . "${PY_ENV}/bin/activate"
 fi
 
-exec python3 "${PY_PATH}" ${@}
+PYTHONPATH="${NUTILS_EXE_DIR}:${PYTHONPATH}" exec python3 "${PY_PATH}" ${@}
