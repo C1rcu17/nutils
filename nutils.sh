@@ -11,18 +11,26 @@ PY_ENV="${EXE_DIR}/py3env"
 PY_REQ="${EXE_DIR}/requirements.txt"
 
 if [ "${EXE_PATH}" = "${NUTILS_EXE_PATH}" ]; then
-  echo "This script is meant to be symlinked"
-  exit 100
+  if [ "${#}" -ne 1 ]; then
+    echo "Usage: ${0} EXE_NAME" >&2
+    exit 100
+  fi
+
+  LTARGET="$(n-lnreltarget "${NUTILS_EXE_PATH}" ${1})"
+  LNAME="$(dirname "${1}")/n-$(basename "${1}")"
+  ln -sfn "${LTARGET}" "${LNAME}"
+  echo "Created symlink: ${LNAME} -> ${LTARGET}"
+  touch "${1}.py"
+  exit 0
 fi
 
 if [ ! "$(echo "${EXE_NAME}" | cut -c1-2)" = "n-" ]; then
-  echo "Symlinks to '${NUTILS_EXE_NAME}' must start with 'n-'"
+  echo "Symlinks to '${NUTILS_EXE_NAME}' must start with 'n-'" >&2
   exit 101
 fi
 
-
 if [ ! -f "${PY_PATH}" ]; then
-  echo "'${PY_PATH}' not found"
+  echo "'${PY_PATH}' not found" >&2
   exit 102
 fi
 
@@ -36,4 +44,4 @@ if [ -f "${PY_REQ}" ]; then
   . "${PY_ENV}/bin/activate"
 fi
 
-exec python3 "${PY_PATH}"
+exec python3 "${PY_PATH}" ${@}
