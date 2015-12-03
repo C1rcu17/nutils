@@ -1,13 +1,19 @@
+from subprocess import check_call, check_output, CalledProcessError
+from shlex import quote
+
+
 def q(arg):
-    from shlex import quote
     return quote(arg)
 
 
 def bash(cmd, *args):
-    from subprocess import check_call
-    check_call(cmd.format(*args), shell=True)
+    try:
+        check_call(cmd.format(*args), shell=True)
+    except CalledProcessError:
+        return False
+    else:
+        return True
 
 
 def stdout(cmd, *args):
-    from subprocess import check_output
     return check_output(cmd.format(*args), shell=True, universal_newlines=True)
